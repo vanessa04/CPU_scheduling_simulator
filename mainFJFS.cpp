@@ -6,35 +6,82 @@
 #include <string>
 using namespace std;
 
+double fingAverage( vector<int> all_values){
+   double total=0.0;
+   int n= all_values.size();
+   for (int i = 0; i < all_values.size(); i++){
+   total = total + all_values.at(i); 
+   }
+   total=total/n;
+return total;
+}
+//////////////////////////////////////////////////////////////////////////////////////
 
+
+vector<int> findCompleteTime (vector<int> burst_times){
+    vector<int> complete_time;
+    complete_time.push_back(burst_times.at(0));
+    for (int i = 1; i < burst_times.size(); i++){
+    
+        complete_time.push_back(burst_times.at(i) + complete_time.at(i-1));
+
+}
+    return complete_time;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+vector<int> findTurnAroundTime (vector<int> complete_time, vector<int> arrival_times){
+    vector<int> turn_around_time;
+    for(int i=0;i< arrival_times.size();i++){
+    turn_around_time.push_back(complete_time.at(i)- arrival_times.at(i));
+
+    }
+    return turn_around_time;
+}
+//////////////////////////////////////////////////////////////////////////////////////
+
+vector<int> findWaitingTime (vector<int> turn_around_time , vector<int> burst_times){
+    vector<int> waiting_time;
+    for(int i=0;i< burst_times.size();i++){
+    waiting_time.push_back(turn_around_time.at(i)- burst_times.at(i));
+    }
+    return waiting_time;
+}
 
 
 int main(){
+
+
+
+
 string result;
 vector<int> pids;
 vector<int> arrival_times;
 vector<int> burst_times;
+vector <int> complete_time;
+vector <int> turn_around_time;
+vector <int> waiting_time;
+double average_turn_around_time=0.0,average_waiting_time=0.0,average_complete_time=0.0;
+int n = pids.size();
 
 
     std::vector<int> numbers;
-    ifstream inputFile("Ps.txt");        // Input file stream object
+    ifstream inputFile("Ps.txt");        
 
-    // Check if exists and then open the file.
+   
     if (inputFile.good()) {
-        // Push items into a vector
+        
         int current_number = 0;
         while (inputFile >> current_number){
             numbers.push_back(current_number);
         }
 
-        // Close the file.
+        
         inputFile.close();
 
-        // Display the numbers read:
-        cout << "The numbers are: ";
-        for (int count = 0; count < numbers.size(); count++){
-            cout << numbers[count] << " ";
-        }
+       
+
 
         cout << endl;
     }else {
@@ -42,6 +89,7 @@ vector<int> burst_times;
         inputFile.close();
     }
 
+//////////////////////////////////////////////////////////////////////////////////////
 
 for(int i= 0; i< numbers.size() ; i=i+3){ 
 pids.push_back(numbers.at(i));
@@ -54,97 +102,33 @@ arrival_times.push_back(numbers.at(i));
 for(int i= 2; i< numbers.size() ; i=i+3){ 
 burst_times.push_back(numbers.at(i));
 }
+  
+
+//////////////////////////////////////////////////////////////////////////////////////
 
 
+complete_time = findCompleteTime (burst_times);
+turn_around_time= findTurnAroundTime (complete_time, arrival_times);
+waiting_time = findWaitingTime (turn_around_time , burst_times);
 
-// //To Print my Vectors
-
-// cout << "Pid: ";
-//         for (int count = 0; count < pids.size(); count++){
-//             cout <<  pids[count] << " "<<endl;
-//         }
-
-
-
-// cout << "arrival_times: ";
-//         for (int count = 0; count < arrival_times.size(); count++){
-//             cout <<  arrival_times[count] << " "<<endl;;
-//         }
-
-// cout << "burst_times: ";
-//         for (int count = 0; count < burst_times.size(); count++){
-//             cout <<  burst_times[count] << " "<<endl;;
-//         }
+cout<<"Pid   " << "AT   "<< "BT   " <<"CT   "<< "TAT   "<< "WT   " <<endl;
+for (int i = 0; i < complete_time.size(); i++){
+    cout<< "P"<< pids.at(i) <<"    " <<arrival_times.at(i)<< "    "<<burst_times.at(i)<< "    "<< complete_time.at(i)<< "    " <<turn_around_time.at(i)<< "    "<<waiting_time.at(i)<<endl;
+}
 
 
+//////////////////////////////////////////////////////////////////////////////////////
 
 
-// //Testing the waters
-
-// ifstream fin("Ps.txt");
-//     if (fin.fail()) {
-//         cerr << "File cannot be read, opened, or does not exist.\n";
-//         exit(1);
-//     }
-//     string strand;
-//     while(getline(fin, strand)) {
-        
-      
-//         for(int i =0; i< strand.length(); i++){
-//               cout<<strand[i]<< " check the i is "<< i << endl;
-
-//           if (isdigit(strand[i])){
-//              stringstream ss;
-//              string a;
-//              cout<<"i is "<< i << endl;
-//              ss << strand[i];
-//              ss>>a;
-//              if (strand[i++]!= ' '){
-//                  string sed;
-//             ss << strand[i];
-//              ss>> sed;
-//               cout<<"*** sed "<< sed << endl;
-//              a+=sed;
-//              cout<<"i is sed "<< i << endl;
-//              i--;
-//              cout<<"i is --"<< i << endl;
-//              }
-             
-//         ar.push_back(a);
-//         }
-        
-// }
-        
-        
-
-//         //cout << result << endl;
-
-//     // for (int i =0; i<ar.length(); i++){
-//     //     if (isdigit(result[i]))
-//     //     cout<<result[i];
-//     // }
-//         //cout<< result[i]<<"=";
-
-// // }
-        
-//     }
-
-//     for (int i =0; i<ar.size(); i++){
-        
-//         cout<<ar.at(i)<< "|";
-//     }
-       
+average_turn_around_time = fingAverage(complete_time);
+average_waiting_time = fingAverage(waiting_time);
+average_complete_time = fingAverage(turn_around_time);
 
 
-// // for (int i =0; i<result.length(); i++){
-// // cout<< result[i]<<"=";
+cout<<"The average completion time is " <<average_turn_around_time<< endl;
+cout << "The average waiting time is " << average_waiting_time<< endl;
+cout << "The avg turn around time is "<< average_complete_time<< endl;
 
-// // }
-
-
-
-//     // cout<< result.length()<< endl;
-//     fin.close();
 
 return 0;
 }
